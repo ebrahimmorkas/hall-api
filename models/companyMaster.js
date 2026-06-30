@@ -1,0 +1,74 @@
+const mongoose = require('mongoose');
+
+const websiteMasterSchema = mongoose.Schema({
+    vendorId: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        unique: true,
+        index: true
+    },
+    isSendingEmailFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    isEmailVerificationFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    isSendingSMSFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    isMobileVerificationFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    isSendingEmailFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    fileUploadSize: {
+        type: Number,
+        default: 5
+    },
+    isPDFDownloadableFeatureOn: {
+        type: Boolean,
+        default: true
+    },
+    isAnnouncementFeatureOn: {
+        type: Boolean,
+        default: true
+    },
+    numberOfAnnouncementsAllowed: {
+        type: Number,
+        default: 2,
+    },
+    isBannerFeatureOn: {
+        type: Boolean,
+        default: true
+    },
+    numberOfBannersAllowed: {
+        type: Number,
+        default: 2
+    },
+    isWebsiteBuilderFeatureOn: {
+        type: Boolean,
+        default: false
+    },
+    noOfHallsAllowed: {
+        type: Number,
+        default: 1
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    }
+}, {
+  timestamps: true
+});
+
+module.exports = mongoose.model('WebsiteMaster', websiteMasterSchema);
