@@ -39,6 +39,7 @@ const ensureVendorDataCached = async (req, res, next) => {
         }
 
         // req.companySettings = companySettings;
+        req.websiteMasterData = websiteMasterData;
         req.companyMasterData = companyMasterData;
         next();
 

@@ -10,6 +10,7 @@ const ensureVendorDataCached = require('./middlewares/ensureVendorDataCached');
 // Routes
 const companySettingsRoutes = require('./routes/companySettingsRoutes');
 const companyMasterRoutes = require('./routes/companyMasterRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ if (process.env.IS_REDIS_SERVER_ON == 1) {
 app.use('/api/company-master', companyMasterRoutes);
 app.use('/api/company-settings', companySettingsRoutes);
 // Private Routes
+app.use('/api/announcements', announcementRoutes);
 
 // Start of dummy to be removed
 app.get("/", (req, res) => {
