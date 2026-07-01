@@ -1,25 +1,18 @@
-const CompanySettings = require('../models/CompanySetting');
+const companySettingsService = require('../services/companySettingsService');
 const logger = require('../utils/logger.js');
 const common = require('../utils/common');
 
 const getCompanySettings = async (req, res) => {
-    const vendorId = req.vendorId;
+  const vendorId = req.vendorId;
   try {
-    console.log(`getCompanySettings function is called`);
-    logger.logInfo('Fetching company settings from DB', { vendorId });
-    
-    const settings = await CompanySettings.findOne({ vendorId });
-    
+    const settings = await companySettingsService.fetchCompanySettingsByVendorId(vendorId);
     if (!settings) {
-      logger.logFailure('Company settings not found', { vendorId });
-      return null;
+      return common.sendError(res, 404, "Company settings not found");
     }
-    
-    logger.logSuccess('Company settings fetched successfully', { vendorId });
-    return common.sendSuccess(res, 200, "Company Settings fecthed successfully", settings);
+    return common.sendSuccess(res, 200, "Company settings fetched successfully", settings);
   } catch (error) {
     logger.logException('Error fetching company settings', { vendorId, error });
-    throw error;
+    return common.sendError(res, 500, "Failed to fetch company settings");
   }
 };
 

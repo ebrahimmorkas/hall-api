@@ -1,24 +1,18 @@
-const CompanyMaster = require('../models/CompanyMaster');
+const companyMasterService = require('../services/companyMasterService');
 const logger = require('../utils/logger.js');
 const common = require('../utils/common');
 
 const getCompanyMasterData = async (req, res) => {
+  const vendorId = req.vendorId;
   try {
-    const vendorId = req.vendorId;
-    logger.logInfo('Fetching company master data from DB', { vendorId });
-    
-    const companyMasterData = await CompanyMaster.findOne({ vendorId });
-    
+    const companyMasterData = await companyMasterService.fetchCompanyMasterByVendorId(vendorId);
     if (!companyMasterData) {
-      logger.logFailure('Company master data not found', { vendorId });
-      return null;
+      return common.sendError(res, 404, "Company master data not found");
     }
-    
-    logger.logSuccess('Company master data fetched successfully', { vendorId });
-    common.sendSuccess(res, 200, "Company master data fecthed successfully", companyMasterData);
+    return common.sendSuccess(res, 200, "Company master data fetched successfully", companyMasterData);
   } catch (error) {
-    logger.logException('Error fetching company settings', { vendorId, error });
-    throw error;
+    logger.logException('Error fetching company master data', { vendorId, error });
+    return common.sendError(res, 500, "Failed to fetch company master data");
   }
 };
 

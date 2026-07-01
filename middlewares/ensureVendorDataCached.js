@@ -1,7 +1,8 @@
 const redisService = require('../services/redisService');
 const redisKeys = require('../utils/redisKeys');
-const { getCompanySettings } = require('../controllers/companySettingsController');
-const { getCompanyMasterData } = require('../controllers/companyMasterController');
+// const companySettingsService = require('../services/companySettingsService');
+const companyMasterService = require('../services/companyMasterService');
+const websiteMasterService = require('../services/websiteMasterService');
 const logger = require('../utils/logger');
 const common = require('../utils/common');
 
@@ -13,23 +14,31 @@ const ensureVendorDataCached = async (req, res, next) => {
             return common.sendError(res, 400, `Vendor identification failed`);
         }
 
-        const companySettings = await redisService.getOrSet(
-            redisKeys.companySettings(vendorId),
-            async () => await getCompanySettings(),
+        // const companySettings = await redisService.getOrSet(
+        //     redisKeys.companySettings(vendorId),
+        //     async () => await companySettingsService.fetchCompanySettingsByVendorId(vendorId),
+        //     3600
+        // );
+
+        const websiteMasterData = await redisService.getOrSet(
+            redisKeys.websiteMaster(),
+            async () => await websiteMasterService.fetchWebsiteMasterData(),
             3600
         );
 
         const companyMasterData = await redisService.getOrSet(
             redisKeys.companyMaster(vendorId),
-            async () => await getCompanyMasterData(),
+            async () => await companyMasterService.fetchCompanyMasterByVendorId(vendorId),
             3600
         );
 
-        if (!companySettings || !companyMasterData) {
+        console.log(`ensureVendorDataCached middleware ${companyMasterData}`);
+
+        if (!companyMasterData) {
             return common.sendError(res, 500, `Failed to load vendor configuration`);
         }
 
-        req.companySettings = companySettings;
+        // req.companySettings = companySettings;
         req.companyMasterData = companyMasterData;
         next();
 

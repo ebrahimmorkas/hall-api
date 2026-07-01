@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
-const companyMasterSchema = mongoose.Schema({
-    vendorId: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        unique: true,
-        index: true
-    },
+const websiteMasterSchema = mongoose.Schema({
     isSendingEmailFeatureOn: {
         type: Boolean,
         default: false
@@ -71,4 +65,4 @@ const companyMasterSchema = mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('CompanyMaster', companyMasterSchema);
+module.exports = mongoose.model('WebsiteMaster', websiteMasterSchema);
