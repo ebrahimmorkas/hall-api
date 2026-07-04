@@ -90,6 +90,27 @@ const validateAddAnnouncement = async (req, res, next) => {
     }
 };
 
+const validateDeleteAnnouncement = (req, res, next) => {
+    try {
+        console.log(req.body);
+    const { announcement_id } = req.body;
+    if (!announcement_id) {
+        logger.logInfo(`announcementValidation: validateDeleteAnnouncement - announcement ID no provided`);
+        return common.sendError(res, 400, 'Validation failed', ['Announcement ID is required']);
+    }
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(announcement_id)) {
+        logger.logInfo(`announcementValidation: validateDeleteAnnouncement - Invalid announcement ID ${announcement_id}`);
+        return common.sendError(res, 400, 'Validation failed', ['Invalid announcement ID']);
+    }
+    next();
+} catch (err) {
+    logger.logException(`announcementValidation: validateDeleteAnnouncement - Exception in validatiob middleware while deleting announcement ${err}`);
+}
+};
+
+
 module.exports = {
-    validateAddAnnouncement
+    validateAddAnnouncement,
+    validateDeleteAnnouncement
 };

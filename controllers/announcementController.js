@@ -5,8 +5,7 @@ const common = require('../utils/common');
 const addAnnouncement = async (req, res) => {
     const vendorId = req.vendorId;
     try {
-        // console.log("Request received for adding announcement");
-        // Step 1: Check WebsiteMaster (platform-level kill switch)
+        // Step 1: Check WebsiteMaster 
         const websiteMasterData = req.websiteMasterData;
         // console.log(`Here is your website msater data ${websiteMasterData.isAnnouncementFeatureOn}`)
         if (!websiteMasterData?.isAnnouncementFeatureOn) {
@@ -31,13 +30,29 @@ const addAnnouncement = async (req, res) => {
         return common.sendSuccess(res, 201, 'Announcement added successfully', announcement);
 
     } catch (error) {
-        console.log('ACTUAL ERROR MESSAGE:', error.message);
-        console.log('ACTUAL ERROR STACK:', error.stack);
         logger.logException('announementController - exception in adding announcement', { vendorId, error });
         return common.sendError(res, 500, 'Failed to add announcement');
     }
 };
 
+const deleteAnnouncement = async (req, res) => {
+    const vendorId = req.vendorId;
+    const { announcement_id } = req.body;
+    try {
+        const result = await announcementService.softDeleteAnnouncement(vendorId, announcement_id);
+
+        if (result.notFound) {
+            return common.sendError(res, 404, 'Announcement not found');
+        }
+
+        return common.sendSuccess(res, 200, 'Announcement deleted successfully');
+    } catch (error) {
+        logger.logException('announcementController: deleteAnnouncment - exception in deleting announcement', { vendorId, error });
+        return common.sendError(res, 500, 'Failed to delete announcement');
+    }
+};
+
 module.exports = {
-    addAnnouncement
+    addAnnouncement,
+    deleteAnnouncement
 };
