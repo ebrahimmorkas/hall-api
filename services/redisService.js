@@ -107,11 +107,13 @@ class RedisService {
 
       const cached = await this.get(key);
 
+      console.log(`${key} and now ${cached}`);
+
       if (cached !== null) return cached;
 
       logger.logInfo("Cache MISS - fetching", { key });
 
-      console.log(`30 jun 1 ${fetchFunction}`);
+      // console.log(`30 jun 1 ${fetchFunction}`);
 
       const freshData = await fetchFunction();
 

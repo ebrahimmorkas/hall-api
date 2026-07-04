@@ -43,11 +43,17 @@ app.use('/api/announcements', announcementRoutes);
 app.get("/", (req, res) => {
     res.send("Hello");
 });
+
+app.get('/flush-redis', async (req, res) => {
+    const redisService = require('./services/redisService');
+    await redisService.del('website-master');
+    res.send('Flushed');
+});
 // End of dummy to be removed
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  // console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
 
 module.exports = app;

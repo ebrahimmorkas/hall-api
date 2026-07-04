@@ -18,5 +18,5 @@ const getWebsiteMasterData = async (req, res) => {
 }
 
 module.exports = {
-    websiteMasterData
+    getWebsiteMasterData
 };

@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 const fetchWebsiteMasterData = async () => {
     try {
         logger.logInfo('Fetching website master data from DB');
-        const websiteMasterData = await WebsiteMaster.find();
+        const websiteMasterData = await WebsiteMaster.findOne();
         if (!websiteMasterData) {
             logger.logError(`WEBSITE MASTER DATA NOT FOUND`)
             return null;

@@ -11,7 +11,7 @@ const connectDB = async () => {
       family: 4,
     });
 
-    console.log(`✅ MongoDB Connected`);
+    // console.log(`✅ MongoDB Connected`);
   } catch (error) {
     console.error("❌ MongoDB Connection Failed");
     console.error(error.message);

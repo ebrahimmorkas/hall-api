@@ -5,8 +5,10 @@ const common = require('../utils/common');
 const addAnnouncement = async (req, res) => {
     const vendorId = req.vendorId;
     try {
+        // console.log("Request received for adding announcement");
         // Step 1: Check WebsiteMaster (platform-level kill switch)
         const websiteMasterData = req.websiteMasterData;
+        // console.log(`Here is your website msater data ${websiteMasterData.isAnnouncementFeatureOn}`)
         if (!websiteMasterData?.isAnnouncementFeatureOn) {
             return common.sendError(res, 403, 'This feature is temporarily off');
         }
@@ -29,6 +31,8 @@ const addAnnouncement = async (req, res) => {
         return common.sendSuccess(res, 201, 'Announcement added successfully', announcement);
 
     } catch (error) {
+        console.log('ACTUAL ERROR MESSAGE:', error.message);
+        console.log('ACTUAL ERROR STACK:', error.stack);
         logger.logException('announementController - exception in adding announcement', { vendorId, error });
         return common.sendError(res, 500, 'Failed to add announcement');
     }

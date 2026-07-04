@@ -9,7 +9,7 @@ function logWarning(message, meta = {}) {
 }
 
 function logError(message, meta = {}) {
-  console.log("I will throw error")
+  // console.log("I will throw error")
   logger.error(meta, message);
 }
 

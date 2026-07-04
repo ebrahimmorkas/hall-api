@@ -56,11 +56,10 @@ const announcementSchema = new mongoose.Schema({
 });
 
 
-announcementSchema.pre('validate', function(next) {
+announcementSchema.pre('validate', function() {
   if (this.endDate <= this.startDate) {
-    return next(new Error('endDate must be greater than startDate'));
+    throw new Error('endDate must be greater than startDate');
   }
-  next();
 });
 
 module.exports = mongoose.model("Announcement", announcementSchema);
