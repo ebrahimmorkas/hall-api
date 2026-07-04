@@ -52,7 +52,29 @@ const deleteAnnouncement = async (req, res) => {
     }
 };
 
+const updateAnnouncement = async (req, res) => {
+    try {
+    const vendorId = req.vendorId;
+    const { id: announcement_id } = req.body;
+    try {
+        const updated = await announcementService.updateAnnouncement(vendorId, announcement_id, req.body);
+
+        if (!updated) {
+            return common.sendError(res, 404, 'Announcement not found');
+        }
+
+        return common.sendSuccess(res, 200, 'Announcement updated successfully', updated);
+    } catch (error) {
+        logger.logException('announcementController - exception in updating announcement', { vendorId, error });
+        return common.sendError(res, 500, 'Failed to update announcement');
+    }
+} catch (err) {
+    logger.logException(`announcementController: updateAnnouncement - Exception while updating the announcement from controller ${err}`)
+}
+};
+
 module.exports = {
     addAnnouncement,
-    deleteAnnouncement
+    deleteAnnouncement,
+    updateAnnouncement
 };
