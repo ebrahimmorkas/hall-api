@@ -55,7 +55,7 @@ const deleteAnnouncement = async (req, res) => {
 const updateAnnouncement = async (req, res) => {
     try {
     const vendorId = req.vendorId;
-    const { id: announcement_id } = req.body;
+    const { announcement_id } = req.body;
     try {
         const updated = await announcementService.updateAnnouncement(vendorId, announcement_id, req.body);
 

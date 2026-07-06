@@ -113,15 +113,15 @@ const validateDeleteAnnouncement = (req, res, next) => {
 const validateUpdateAnnouncement = async (req, res, next) => {
     try {
         const vendorId = req.vendorId;
-        const { announcewment_id } = req.body;
+        const { announcement_id } = req.body;
         const { name, heading, content, isActive, startDate, endDate, isDefault, precedence } = req.body;
         const errors = [];
 
         // id from req.body
-        if (!announcewment_id) {
+        if (!announcement_id) {
             return common.sendError(res, 400, 'Validation failed', ['Announcement ID is required']);
         }
-        if (!mongoose.Types.ObjectId.isValid(announcewment_id)) {
+        if (!mongoose.Types.ObjectId.isValid(announcement_id)) {
             return common.sendError(res, 400, 'Validation failed', ['Invalid announcement ID']);
         }
 
@@ -144,7 +144,7 @@ const validateUpdateAnnouncement = async (req, res, next) => {
                     vendorId,
                     name: name.trim(),
                     isDeleted: false,
-                    _id: { $ne: announcewment_id }
+                    _id: { $ne: announcement_id }
                 });
                 if (nameExists) {
                     errors.push('Announcement with this name already exists');
@@ -189,7 +189,7 @@ const validateUpdateAnnouncement = async (req, res, next) => {
         }
 
         // Fetch existing doc for date cross-validation
-        const existing = await Announcement.findOne({ _id: announcewment_id, vendorId, isDeleted: false });
+        const existing = await Announcement.findOne({ _id: announcement_id, vendorId, isDeleted: false });
         if (!existing) {
             return common.sendError(res, 404, 'Announcement not found');
         }
@@ -225,8 +225,8 @@ const validateUpdateAnnouncement = async (req, res, next) => {
         }
 
         next();
-    } catch (error) {
-        return common.sendError(res, 500, 'Validation error');
+    } catch (err) {
+        logger.logException(`announcementValidations: updateAnnouncement - Exception while updating the announcement. Exception is ${err}`, {err})
     }
 };
 
