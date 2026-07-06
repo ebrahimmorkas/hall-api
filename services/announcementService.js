@@ -1,5 +1,16 @@
 const Announcement = require('../models/Announcement');
 const logger = require('../utils/logger');
+const redisService = require('./redisService');
+const redisKeys = require('../utils/redisKeys');
+
+const invalidateAnnouncementCache = async (vendorId) => {
+    try {
+        await redisService.del(redisKeys.announcement(vendorId));
+        logger.logInfo('Announcement cache invalidated', { vendorId });
+    } catch (err) {
+        logger.logException('announcementService: invalidateAnnouncementCache - Exception while invalidating cache', { vendorId, err });
+    }
+};
 
 const getAnnouncementCount = async (vendorId) => {
     try {
@@ -50,6 +61,8 @@ const addAnnouncement = async (vendorId, announcementData, existingCount) => {
 
         const saved = await announcement.save();
         logger.logInfo('Announcement added successfully', { vendorId, announcementId: saved._id });
+
+        await invalidateAnnouncementCache(vendorId);
         return saved;
     } catch (err) {
         logger.logException(`announcementService: addAnnouncement - Exception while adding thew announcement ${err, vendorId}`);
@@ -99,6 +112,7 @@ const softDeleteAnnouncement = async (vendorId, announcementId) => {
         }
 
         logger.logInfo('Announcement soft deleted and precedences re-ordered', { vendorId, announcementId });
+        await invalidateAnnouncementCache(vendorId);
         return { deleted: true };
     } catch (err) {
         logger.logException(`announcementService: softDeleteAnnouncement - Exception while deleting the announcement ${vendorId, announcementId}`);
@@ -151,9 +165,49 @@ const updateAnnouncement = async (vendorId, announcementId, updateData) => {
 
         const updated = await announcement.save();
         logger.logInfo('Announcement updated successfully', { vendorId, announcementId });
+        await invalidateAnnouncementCache(vendorId);
         return updated;
     } catch (err) {
         logger.logException(`announcementService: updateAnnouncement - Exception while updating the announcement ${err}`);
+    }
+};
+
+const fetchAllActiveAnnouncements = async (vendorId) => {
+    try {
+        const announcements = await Announcement.find(
+            { vendorId, isDeleted: false, isActive: true },
+            null,
+            { sort: { isDefault: -1, precedence: 1 } }
+        );
+        logger.logInfo('Active announcements fetched from DB', { vendorId });
+        return announcements;
+    } catch (err) {
+        logger.logException('announcementService: fetchAllActiveAnnouncements - Exception while fetching active announcements', { vendorId, err });
+    }
+};
+
+const fetchAllAnnouncementsAdmin = async (vendorId) => {
+    try {
+        const announcements = await Announcement.find(
+            { vendorId, isDeleted: false },
+            null,
+            { sort: { isDefault: -1, precedence: 1 } }
+        );
+        logger.logInfo('All announcements fetched from DB for admin', { vendorId });
+        return announcements;
+    } catch (err) {
+        logger.logException('announcementService: fetchAllAnnouncementsAdmin - Exception while fetching all announcements for admin', { vendorId, err });
+    }
+};
+
+const fetchAnnouncementById = async (vendorId, announcementId) => {
+    try {
+        const announcement = await Announcement.findOne({ _id: announcementId, vendorId, isDeleted: false });
+        if (!announcement) return null;
+        logger.logInfo('Announcement fetched by ID', { vendorId, announcementId });
+        return announcement;
+    } catch (err) {
+        logger.logException('announcementService: fetchAnnouncementById - Exception while fetching announcement by ID', { vendorId, announcementId, err });
     }
 };
 
@@ -161,5 +215,8 @@ module.exports = {
     addAnnouncement,
     getAnnouncementCount,
     softDeleteAnnouncement,
-    updateAnnouncement
+    updateAnnouncement,
+    fetchAllActiveAnnouncements,
+    fetchAllAnnouncementsAdmin,
+    fetchAnnouncementById
 };
