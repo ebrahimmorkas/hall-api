@@ -11,6 +11,7 @@ const ensureVendorDataCached = require('./middlewares/ensureVendorDataCached');
 const companySettingsRoutes = require('./routes/companySettingsRoutes');
 const companyMasterRoutes = require('./routes/companyMasterRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
+const bannerRoutes = require('./routes/bannerRoutes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 // Apply middlewares to all routes
 app.use(vendorDetection);
@@ -38,6 +40,7 @@ app.use('/api/company-master', companyMasterRoutes);
 app.use('/api/company-settings', companySettingsRoutes);
 // Private Routes
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/banners', bannerRoutes);
 
 // Start of dummy to be removed
 app.get("/", (req, res) => {
